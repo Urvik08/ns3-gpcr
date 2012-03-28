@@ -33,6 +33,8 @@
 namespace ns3 {
 
 /**
+ * \ingroup topology
+ *
  * \brief Interface for input file readers management.
  *
  * This interface perform the shared tasks among all possible input file readers.
@@ -52,9 +54,19 @@ public:
   class Link
   {
 public:
-    typedef std::map<std::string, std::string >::const_iterator ConstAttributesIterator;
+  /**
+   * \brief Constant iterator to scan the map of link attributes.
+   */
+    typedef std::map<std::string, std::string>::const_iterator ConstAttributesIterator;
 
-    Link ( Ptr<Node> fromPtr, std::string fromName, Ptr<Node> toPtr, std::string toName );
+    /**
+     * \brief Constructor
+     * \param fromPtr Ptr to the node the link is orginating from
+     * \param fromName name of the node the link is orginating from
+     * \param toPtr Ptr to the node the link is directed to
+     * \param toName name of the node the link is directed to
+     */
+    Link ( Ptr<Node> fromPtr, const std::string &fromName, Ptr<Node> toPtr, const std::string &toName );
 
     /**
      * \brief Returns a Ptr<Node> to the "from" node of the link
@@ -83,7 +95,7 @@ public:
      *
      * \return the value of the attribute
      */
-    std::string GetAttribute (std::string name) const;
+    std::string GetAttribute (const std::string &name) const;
     /**
      * \brief Returns the value of a link attribute.
      * \param name the name of the attribute
@@ -91,13 +103,13 @@ public:
      *
      * \return true if the attribute was defined, false otherwise.
      */
-    bool GetAttributeFailSafe (std::string name, std::string &value) const;
+    bool GetAttributeFailSafe (const std::string &name, std::string &value) const;
     /**
      * \brief Sets an arbitrary link attribute.
      * \param name the name of the attribute
      * \param value the value of the attribute
      */
-    void SetAttribute (std::string name, std::string &value);
+    void SetAttribute (const std::string &name, const std::string &value);
     /**
      * \brief Returns an iterator to the begin of the attributes.
      * \return a const iterator to the first attribute of a link.
@@ -115,7 +127,7 @@ private:
     Ptr< Node > m_fromPtr;
     std::string m_toName;
     Ptr< Node > m_toPtr;
-    std::map<std::string, std::string > m_linkAttr;
+    std::map<std::string, std::string> m_linkAttr;
   };
 
   /**
@@ -145,7 +157,7 @@ private:
    * \brief Sets the input file name.
    * \param fileName the input file name.
    */
-  void SetFileName (const std::string fileName);
+  void SetFileName (const std::string &fileName);
 
   /**
    * \brief Returns the input file name.
