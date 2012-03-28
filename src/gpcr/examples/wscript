@@ -1,0 +1,31 @@
+## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
+
+def build(bld):
+    obj = bld.create_ns3_program('gpcr-test1',
+                                 ['wifi', 'internet', 'gpcr'])
+    obj.source = 'gpcr-test1.cc'
+
+    obj = bld.create_ns3_program('gpcr-test2',
+                                 ['wifi', 'internet', 'gpcr'])
+    obj.source = 'gpcr-test2.cc'
+
+    obj = bld.create_ns3_program('gpcr-test3',
+                                 ['wifi', 'internet', 'gpcr'])
+    obj.source = 'gpcr-test3.cc'
+
+    obj = bld.create_ns3_program('gpcr-test4',
+                                 ['wifi', 'internet', 'gpcr'])
+    obj.source = 'gpcr-test4.cc'
+
+    obj = bld.create_ns3_program('gpcr-test5',
+                                 ['wifi', 'internet', 'gpcr'])
+    obj.source = 'gpcr-test5.cc'
+
+    obj = bld.create_ns3_program('gpcr-test6',
+                                 ['wifi', 'internet', 'gpcr'])
+    obj.source = 'gpcr-test6.cc'
+
+    obj = bld.create_ns3_program('gpcr-test7',
+                                 ['wifi', 'internet', 'gpcr'])
+    obj.source = 'gpcr-test7.cc'
+
