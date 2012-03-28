@@ -104,9 +104,10 @@ operator<< (std::ostream & os, TypeHeader const & h)
 //-----------------------------------------------------------------------------
 // HELLO
 //-----------------------------------------------------------------------------
-HelloHeader::HelloHeader (uint64_t originPosx, uint64_t originPosy)
+  HelloHeader::HelloHeader (uint64_t originPosx, uint64_t originPosy, uint8_t isCoordinator)
   : m_originPosx (originPosx),
-    m_originPosy (originPosy)
+    m_originPosy (originPosy),
+    m_isCoordinator (isCoordinator)
 {
 }
 
@@ -131,7 +132,7 @@ HelloHeader::GetInstanceTypeId () const
 uint32_t
 HelloHeader::GetSerializedSize () const
 {
-  return 16;
+  return 17;
 }
 
 void
@@ -142,6 +143,7 @@ HelloHeader::Serialize (Buffer::Iterator i) const
 
   i.WriteHtonU64 (m_originPosx);
   i.WriteHtonU64 (m_originPosy);
+  i.WriteHtonU8 (m_isCoordinator);
 
 }
 
@@ -153,8 +155,9 @@ HelloHeader::Deserialize (Buffer::Iterator start)
 
   m_originPosx = i.ReadNtohU64 ();
   m_originPosy = i.ReadNtohU64 ();
+  m_isCoordinator = i.ReadNtoh8 ();
 
-  NS_LOG_DEBUG ("Deserialize X " << m_originPosx << " Y " << m_originPosy);
+  NS_LOG_DEBUG ("Deserialize X " << m_originPosx << " Y " << m_originPosy << " coord " << m_isCoordinator);
 
   uint32_t dist = i.GetDistanceFrom (start);
   NS_ASSERT (dist == GetSerializedSize ());
@@ -180,7 +183,7 @@ operator<< (std::ostream & os, HelloHeader const & h)
 bool
 HelloHeader::operator== (HelloHeader const & o) const
 {
-  return (m_originPosx == o.m_originPosx && m_originPosy == o.m_originPosy);
+  return (m_originPosx == o.m_originPosx && m_originPosy == o.m_originPosy && m_isCoordinator = 0.m_isCoordinator);
 }
 
 
