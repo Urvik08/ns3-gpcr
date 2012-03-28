@@ -32,11 +32,11 @@ PositionTable::GetEntryUpdateTime (Ipv4Address id)
 }
 
 uint8_t
-PositionTable::GetIsCoordinator ()
+PositionTable::GetIsCoordinator (Ipv4Address id)
 {
   if (id == Ipv4Address::GetZero ())
     {
-      return Time (Seconds (0));
+      return 0;
     }
   std::map<Ipv4Address, std::pair<Vector, Time> >::iterator i = m_table.find (id);
   return i->second.second.second;
@@ -156,11 +156,37 @@ PositionTable::Clear ()
   m_table.clear ();
 }
 
+
+/**
+ * \brief Gets a coordinator as next hop if thre is one
+ * \param position the position of the node that has the packet
+ * \param nodePos the position of the destination node
+ * \return Ipv4Address of a coordinator closer to the destination, Ipv4Address::GetZero () if no coordinator was found
+ */
+Ipv4Address 
+PositionTable::GetCoordinatorFromNeighbor (Vector position, Vector nodePos)
+{
+  //no need to check if table is empty, was checked in BestNeighbor right before
+
+  double initialDistance = CalculateDistance (nodePos, position);
+
+  std::map<Ipv4Address, std::pair<Vector, Time> >::iterator i;
+  for (i = m_table.begin (); !(i == m_table.end ()); i++)
+    {
+      if (initialDistance > CalculateDistance (i->second.first, position) && GetIsCoordinator (i->first))
+        {
+          return i->first;
+        }
+    }
+
+  return Ipv4Address::GetZero ();
+}
+
 /**
  * \brief Gets next hop according to GPCR protocol
  * \param position the position of the node that has the packet
  * \param nodePos the position of the destination node
- * \return Ipv4Address of the next hop, Ipv4Address::GetZero () if no nighbour was found in greedy mode
+ * \return Ipv4Address of the next hop, Ipv4Address::GetZero () if no neighbour was found in greedy mode
  */
 Ipv4Address 
 PositionTable::BestNeighbor (Vector position, Vector nodePos)
@@ -175,7 +201,16 @@ PositionTable::BestNeighbor (Vector position, Vector nodePos)
       return Ipv4Address::GetZero ();
     }     //if table is empty (no neighbours)
 
-  Ipv4Address bestFoundID = m_table.begin ()->first;
+  Ipv4Address bestFoundID = GetCoordinatorFromNeighbor (position, nodePos);
+  if(!(bestFoundID == Ipv4Address::GetZero ()))
+    {
+      NS_LOG_DEBUG("Found a Coordinator " << bestFoundID);
+      return bestFoundID;
+    }
+
+  NS_LOG_DEBUG("No Coordinator found");
+
+  bestFoundID = m_table.begin ()->first;
   double bestFoundDistance = CalculateDistance (m_table.begin ()->second.first, position);
   std::map<Ipv4Address, std::pair<Vector, Time> >::iterator i;
   for (i = m_table.begin (); !(i == m_table.end ()); i++)

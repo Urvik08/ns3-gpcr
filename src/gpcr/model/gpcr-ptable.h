@@ -32,7 +32,7 @@ public:
    * \brief Gets the info about if the node is a coordinator
    * \return uint8_t with 1 if it is a coordinator, 0 otherwise
    */
-  uint8_t GetIsCoordinator ();
+  uint8_t GetIsCoordinator (Ipv4Address id);
 
   /**
    * \brief Gets the last time the entry was updated
@@ -82,6 +82,14 @@ public:
   {
     return m_txErrorCallback;
   }
+
+/**
+ * \brief Gets a coordinator as next hop if thre is one
+ * \param position the position of the node that has the packet
+ * \param nodePos the position of the destination node
+ * \return Ipv4Address of a coordinator closer to the destination, Ipv4Address::GetZero () if no coordinator was found
+ */
+  Ipv4Address GetCoordinatorFromNeighbor (Vector position, Vector nodePos);
 
   /**
    * \brief Gets next hop according to GPCR protocol
