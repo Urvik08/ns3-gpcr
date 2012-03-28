@@ -38,7 +38,7 @@ public:
   /**
    * \brief Adds entry in position table
    */
-  void AddEntry (Ipv4Address id, Vector position);
+  void AddEntry (Ipv4Address id, Vector position, uint8_t isCoordinator);
 
   /**
    * \brief Deletes entry in position table
@@ -84,10 +84,6 @@ public:
    * \return Ipv4Address of the next hop, Ipv4Address::GetZero () if no nighbour was found in greedy mode
    */
   Ipv4Address BestNeighbor (Vector position, Vector nodePos);
-
-  bool IsInSearch (Ipv4Address id);
-
-  bool HasPosition (Ipv4Address id);
 
   static Vector GetInvalidPosition ()
   {
