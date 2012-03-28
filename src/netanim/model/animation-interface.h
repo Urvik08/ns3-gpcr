@@ -99,6 +99,13 @@ public:
   AnimationInterface (uint16_t port, bool usingXML = true);
 
   /**
+   * \brief Check if AnimationInterface is initialized
+   * \returns true if AnimationInterface was already initialized
+   *
+   */
+  static bool IsInitialized (void);
+
+  /**
    * \brief Specify that animation commands are to be written
    * to the specified output file.
    *
@@ -201,7 +208,30 @@ public:
    * \param z Z co-ordinate of the node
    *
    */
-  void SetConstantPosition (Ptr <Node> n, double x, double y, double z=0);
+  static void SetConstantPosition (Ptr <Node> n, double x, double y, double z=0);
+
+  /**
+   * \brief Is AnimationInterface started
+   * \returns true if AnimationInterface was started
+   *
+   */
+  bool IsStarted (void);
+
+  /**
+   * \brief Show all 802.11 frames. Default: show only frames accepted by mac layer
+   * \param showAll if true shows all 802.11 frames including beacons, association
+   *  request and acks (very chatty). if false only frames accepted by mac layer
+   *
+   */
+  void ShowAll802_11 (bool showAll); 
+
+  /**
+   *
+   * \brief Enable Packet metadata
+   * \param enable if true enables writing the packet metadata to the XML trace file
+   *        if false disables writing the packet metadata
+   */
+  void EnablePacketMetadata (bool enable);
 
 private:
 #ifndef WIN32
@@ -253,13 +283,22 @@ private:
                           Ptr<const Packet> p);
   void CsmaMacRxTrace (std::string context,
                        Ptr<const Packet> p);
+
+  void LteTxTrace (std::string context,
+                      Ptr<const Packet> p,
+                      const Mac48Address &);
+
+  void LteRxTrace (std::string context,
+                      Ptr<const Packet> p,
+                      const Mac48Address &);
+
   void MobilityCourseChangeTrace (Ptr <const MobilityModel> mob);
 
   // Write a string to the specified handle;
   int  WriteN (int, const std::string&);
 
-  void OutputWirelessPacket (AnimPacketInfo& pktInfo, AnimRxInfo pktrxInfo);
-  void OutputCsmaPacket (AnimPacketInfo& pktInfo, AnimRxInfo pktrxInfo);
+  void OutputWirelessPacket (Ptr<const Packet> p, AnimPacketInfo& pktInfo, AnimRxInfo pktrxInfo);
+  void OutputCsmaPacket (Ptr<const Packet> p, AnimPacketInfo& pktInfo, AnimRxInfo pktrxInfo);
   void MobilityAutoCheck ();
   
   uint64_t gAnimUid ;    // Packet unique identifier used by Animtion
@@ -271,6 +310,10 @@ private:
   std::map<uint64_t, AnimPacketInfo> pendingWimaxPackets;
   void AddPendingWimaxPacket (uint64_t AnimUid, AnimPacketInfo&);
   bool WimaxPacketIsPending (uint64_t AnimUid); 
+
+  std::map<uint64_t, AnimPacketInfo> pendingLtePackets;
+  void AddPendingLtePacket (uint64_t AnimUid, AnimPacketInfo&);
+  bool LtePacketIsPending (uint64_t AnimUid);
 
   std::map<uint64_t, AnimPacketInfo> pendingCsmaPackets;
   void AddPendingCsmaPacket (uint64_t AnimUid, AnimPacketInfo&);
@@ -286,12 +329,22 @@ private:
   bool NodeHasMoved (Ptr <Node> n, Vector newLocation);
   void AddMargin ();
 
+  void PurgePendingWifi ();
+  void PurgePendingWimax ();
+  void PurgePendingLte ();
+  void PurgePendingCsma ();
+
   // Recalculate topology bounds
   void RecalcTopoBounds (Vector v);
   std::vector < Ptr <Node> > RecalcTopoBounds ();
 
   bool randomPosition;
   AnimWriteCallback m_writeCallback;
+  void ConnectCallbacks ();
+
+  bool m_started;
+  bool m_enforceWifiMacRx;
+  bool m_enablePacketMetadata; 
 
   // Path helper
   std::vector<std::string> GetElementsFromContext (std::string context);
@@ -305,6 +358,8 @@ private:
   double topo_maxX;
   double topo_maxY;
 
+  std::string GetPacketMetadata (Ptr<const Packet> p);
+
   std::string GetXMLOpen_anim (uint32_t lp);
   std::string GetXMLOpen_topology (double minX,double minY,double maxX,double maxY);
   std::string GetXMLOpenClose_node (uint32_t lp,uint32_t id,double locX,double locY);
@@ -313,6 +368,7 @@ private:
   std::string GetXMLOpenClose_rx (uint32_t toLp, uint32_t toId, double fbRx, double lbRx);
   std::string GetXMLOpen_wpacket (uint32_t fromLp,uint32_t fromId, double fbTx, double lbTx, double range);
   std::string GetXMLClose (std::string name) {return "</" + name + ">\n"; }
+  std::string GetXMLOpenClose_meta (std::string metaInfo);
 
 };
 
