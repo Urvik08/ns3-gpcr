@@ -28,25 +28,23 @@ PositionTable::GetEntryUpdateTime (Ipv4Address id)
       return Time (Seconds (0));
     }
   std::map<Ipv4Address, std::pair<Vector, Time> >::iterator i = m_table.find (id);
-  return i->second.second;
+  return i->second.second.first;
 }
 
 /**
  * \brief Adds entry in position table
  */
 void 
-PositionTable::AddEntry (Ipv4Address id, Vector position)
+PositionTable::AddEntry (Ipv4Address id, Vector position, uint8_t isCoordinator)
 {
   std::map<Ipv4Address, std::pair<Vector, Time> >::iterator i = m_table.find (id);
   if (i != m_table.end () || id.IsEqual (i->first))
     {
       m_table.erase (id);
-      m_table.insert (std::make_pair (id, std::make_pair (position, Simulator::Now ())));
-      return;
     }
   
 
-  m_table.insert (std::make_pair (id, std::make_pair (position, Simulator::Now ())));
+  m_table.insert (std::make_pair (id, std::make_pair (position, std::make_pair (Simulator::Now (), isCoordinator))));
 }
 
 /**
@@ -63,7 +61,7 @@ void PositionTable::DeleteEntry (Ipv4Address id)
  * \return Position of that id or NULL if not known
  */
 Vector 
-PositionTable::GetPosition (Ipv4Address id)
+PositionTable::GetPosition (Ipv4Address id) /*FIXME gets from NodeList??? is this correct?*/
 {
 
   NodeList::Iterator listEnd = NodeList::End ();
@@ -267,22 +265,6 @@ void PositionTable::ProcessTxError (WifiMacHeader const & hdr)
 {
 }
 
-
-
-//FIXME ainda preciso disto agr que o LS ja n está aqui???????
-
-/**
- * \brief Returns true if is in search for destionation
- */
-bool PositionTable::IsInSearch (Ipv4Address id)
-{
-  return false;
-}
-
-bool PositionTable::HasPosition (Ipv4Address id)
-{
-  return true;
-}
 
 
 }   // gpcr

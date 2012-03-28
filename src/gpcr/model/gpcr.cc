@@ -504,20 +504,21 @@ RoutingProtocol::RecvGPCR (Ptr<Socket> socket)
   Vector Position;
   Position.x = hdr.GetOriginPosx ();
   Position.y = hdr.GetOriginPosy ();
+  uint8_t isCoordinator = hdr.GetIsCoordinator ();
+
   InetSocketAddress inetSourceAddr = InetSocketAddress::ConvertFrom (sourceAddress);
   Ipv4Address sender = inetSourceAddr.GetIpv4 ();
   Ipv4Address receiver = m_socketAddresses[socket].GetLocal ();
 
-  UpdateRouteToNeighbor (sender, receiver, Position);
+  UpdateRouteToNeighbor (sender, receiver, Position, isCoordinator);
 
 }
 
 
 void
-RoutingProtocol::UpdateRouteToNeighbor (Ipv4Address sender, Ipv4Address receiver, Vector Pos)
+RoutingProtocol::UpdateRouteToNeighbor (Ipv4Address sender, Ipv4Address receiver, Vector Pos, uint8_t isCoordinator)
 {
-  m_neighbors.AddEntry (sender, Pos);
-
+  m_neighbors.AddEntry (sender, Pos, isCoordinator);
 }
 
 
@@ -696,7 +697,7 @@ RoutingProtocol::SendHello ()
     {
       Ptr<Socket> socket = j->first;
       Ipv4InterfaceAddress iface = j->second;
-      HelloHeader helloHeader (((uint64_t) positionX),((uint64_t) positionY));
+      HelloHeader helloHeader (((uint64_t) positionX),((uint64_t) positionY), 0); /*FIXME instead of 0 send depending if is or not coordinator*/
 
       Ptr<Packet> packet = Create<Packet> ();
       packet->AddHeader (helloHeader);

@@ -94,6 +94,15 @@ public:
   {
     return m_originPosy;
   }
+  void SetIsCoordinator (uint8_t isCoord)
+  {
+    m_isCoordinator = isCoord;
+  }
+  uint8_t GetIsCoordinator () const
+  {
+    return m_isCoordinator;
+  }
+
   //\}
 
 
@@ -101,7 +110,7 @@ public:
 private:
   uint64_t         m_originPosx;          ///< Originator Position x
   uint64_t         m_originPosy;          ///< Originator Position x
-  uint8_t          m_isCoordinator        ///< has information if node is coordinator
+  uint8_t          m_isCoordinator;        ///< has information if node is coordinator
 };
 
 std::ostream & operator<< (std::ostream & os, HelloHeader const &);
