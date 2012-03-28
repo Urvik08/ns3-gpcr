@@ -29,6 +29,12 @@ public:
   PositionTable ();
 
   /**
+   * \brief Gets the info about if the node is a coordinator
+   * \return uint8_t with 1 if it is a coordinator, 0 otherwise
+   */
+  uint8_t GetIsCoordinator ();
+
+  /**
    * \brief Gets the last time the entry was updated
    * \param id Ipv4Address to get time of update from
    * \return Time of last update to the position

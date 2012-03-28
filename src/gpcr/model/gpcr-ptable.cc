@@ -31,6 +31,19 @@ PositionTable::GetEntryUpdateTime (Ipv4Address id)
   return i->second.second.first;
 }
 
+uint8_t
+PositionTable::GetIsCoordinator ()
+{
+  if (id == Ipv4Address::GetZero ())
+    {
+      return Time (Seconds (0));
+    }
+  std::map<Ipv4Address, std::pair<Vector, Time> >::iterator i = m_table.find (id);
+  return i->second.second.second;
+}
+
+
+
 /**
  * \brief Adds entry in position table
  */
