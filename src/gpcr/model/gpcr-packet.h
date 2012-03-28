@@ -64,7 +64,7 @@ class HelloHeader : public Header
 {
 public:
   /// c-tor
-  HelloHeader (uint64_t originPosx = 0, uint64_t originPosy = 0);
+  HelloHeader (uint64_t originPosx = 0, uint64_t originPosy = 0, uint8_t isCoordinator = 0);
 
   ///\name Header serialization/deserialization
   //\{
@@ -101,6 +101,7 @@ public:
 private:
   uint64_t         m_originPosx;          ///< Originator Position x
   uint64_t         m_originPosy;          ///< Originator Position x
+  uint8_t          m_isCoordinator        ///< has information if node is coordinator
 };
 
 std::ostream & operator<< (std::ostream & os, HelloHeader const &);
