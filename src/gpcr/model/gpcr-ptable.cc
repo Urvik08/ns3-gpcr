@@ -261,14 +261,14 @@ PositionTable::BestNeighbor (Vector position, Vector nodePos)
   NS_LOG_DEBUG("No Coordinator found");
 
   bestFoundID = m_table.begin ()->first;
-  double bestFoundDistance = CalculateDistance (m_table.begin ()->second.first, position);
+  double bestFoundDistance = CalculateDistance (m_table.begin ()->second.first, nodePos);
   std::map<Ipv4Address, std::pair<Vector, std::pair<Time, uint8_t> > >::iterator i;
   for (i = m_table.begin (); !(i == m_table.end ()); i++)
     {
-      if (bestFoundDistance > CalculateDistance (i->second.first, position))
+      if (bestFoundDistance > CalculateDistance (i->second.first, nodePos))
         {
           bestFoundID = i->first;
-          bestFoundDistance = CalculateDistance (i->second.first, position);
+          bestFoundDistance = CalculateDistance (i->second.first, nodePos);
         }
     }
 
