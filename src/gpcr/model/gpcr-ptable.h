@@ -29,10 +29,19 @@ public:
   PositionTable ();
 
   /**
-   * \brief Gets the info about if the node is a coordinator
+   * \brief Gets the info about if the node "id" is a coordinator
+   * \param id Ipv4Address to get the isCoordinator from
    * \return uint8_t with 1 if it is a coordinator, 0 otherwise
    */
   uint8_t GetIsCoordinator (Ipv4Address id);
+
+
+  /**
+   * \brief Gets the info about if the node in, which called the function, is a coordinator
+   * \return uint8_t with 1 if it is a coordinator, 0 otherwise
+   */
+  uint8_t AmICoordinator ();
+
 
   /**
    * \brief Gets the last time the entry was updated

@@ -697,7 +697,7 @@ RoutingProtocol::SendHello ()
     {
       Ptr<Socket> socket = j->first;
       Ipv4InterfaceAddress iface = j->second;
-      HelloHeader helloHeader (((uint64_t) positionX),((uint64_t) positionY), 0); /*FIXME instead of 0 send depending if is or not coordinator*/
+      HelloHeader helloHeader (((uint64_t) positionX),((uint64_t) positionY), m_neighbors.AmICoordinator ()); 
 
       Ptr<Packet> packet = Create<Packet> ();
       packet->AddHeader (helloHeader);
