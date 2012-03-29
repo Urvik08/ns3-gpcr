@@ -147,8 +147,8 @@ PositionTable::Clear ()
 
 /**
  * \brief Gets next hop according to GPSR protocol
- * \param position the position of the node that has the packet
- * \param nodePos the position of the destination node
+ * \param position the position of the destination node
+ * \param nodePos the position of the node that has the packet
  * \return Ipv4Address of the next hop, Ipv4Address::GetZero () if no nighbour was found in greedy mode
  */
 Ipv4Address 
