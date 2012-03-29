@@ -20,6 +20,56 @@ PositionTable::PositionTable ()
 
 }
 
+uint8_t
+PositionTable::AmICoordinator ()
+{
+  Purge ();
+  if (m_table.empty ())
+    {
+      return 0;
+    }//if table is empty (no neighbours)
+
+double covXY;
+double covX;
+double covY;
+double meanX = 0;
+double meanY = 0;
+int neighbourCount = 0;
+/*according to GPCR authors p_xy = MOD(covXY/(covX*covY)), if p_xy<0.9 node is in junction*/
+
+/*cicle through neighbours to calculate meanX and meanY*/
+std::map<Ipv4Address, std::pair<Vector, std::pair<Time, uint8_t> > >::iterator i;
+  for (i = m_table.begin (); !(i == m_table.end ()); i++)
+    {
+	count++;
+	meanX += i->second.first.X;
+	meanY += i->second.first.Y;
+	}
+meanX = meanX / count;
+meanY = meanY / count;
+
+/*cicle again to calculate covXY, covX and covY*/
+  for (i = m_table.begin (); !(i == m_table.end ()); i++)
+    {
+	covXY = covXY + ((i->second.first.X - meanX) * (i->second.first.Y - meanY));
+	covX = covX + ((i->second.first.X - meanX) * (i->second.first.X - meanX));
+	covY = covY + ((i->second.first.Y - meanY) * (i->second.first.Y - meanY));
+	}
+	covX = sqrt(covX);
+	covY = sqrt(covY);
+	
+	double p_xy = covXY / (covX * covY);
+	
+	if(p_xy < 0.9 && p_xy > -0.9)
+	{
+		return 1;
+	}
+	return 0;
+
+}
+
+
+
 Time 
 PositionTable::GetEntryUpdateTime (Ipv4Address id)
 {
@@ -27,7 +77,7 @@ PositionTable::GetEntryUpdateTime (Ipv4Address id)
     {
       return Time (Seconds (0));
     }
-  std::map<Ipv4Address, std::pair<Vector, Time> >::iterator i = m_table.find (id);
+  std::map<Ipv4Address, std::pair<Vector, std::pair<Time, uint8_t> > >::iterator i = m_table.find (id);
   return i->second.second.first;
 }
 
@@ -38,7 +88,7 @@ PositionTable::GetIsCoordinator (Ipv4Address id)
     {
       return 0;
     }
-  std::map<Ipv4Address, std::pair<Vector, Time> >::iterator i = m_table.find (id);
+  std::map<Ipv4Address, std::pair<Vector, std::pair<Time, uint8_t> > >::iterator i = m_table.find (id);
   return i->second.second.second;
 }
 
@@ -50,7 +100,7 @@ PositionTable::GetIsCoordinator (Ipv4Address id)
 void 
 PositionTable::AddEntry (Ipv4Address id, Vector position, uint8_t isCoordinator)
 {
-  std::map<Ipv4Address, std::pair<Vector, Time> >::iterator i = m_table.find (id);
+  std::map<Ipv4Address, std::pair<Vector, std::pair<Time, uint8_t> > >::iterator i = m_table.find (id);
   if (i != m_table.end () || id.IsEqual (i->first))
     {
       m_table.erase (id);
@@ -99,7 +149,7 @@ bool
 PositionTable::isNeighbour (Ipv4Address id)
 {
 
- std::map<Ipv4Address, std::pair<Vector, Time> >::iterator i = m_table.find (id);
+ std::map<Ipv4Address, std::pair<Vector, std::pair<Time, uint8_t> > >::iterator i = m_table.find (id);
   if (i != m_table.end () || id.IsEqual (i->first))
     {
       return true;
@@ -123,8 +173,8 @@ PositionTable::Purge ()
 
   std::list<Ipv4Address> toErase;
 
-  std::map<Ipv4Address, std::pair<Vector, Time> >::iterator i = m_table.begin ();
-  std::map<Ipv4Address, std::pair<Vector, Time> >::iterator listEnd = m_table.end ();
+  std::map<Ipv4Address, std::pair<Vector, std::pair<Time, uint8_t> > >::iterator i = m_table.begin ();
+  std::map<Ipv4Address, std::pair<Vector, std::pair<Time, uint8_t> > >::iterator listEnd = m_table.end ();
   
   for (; !(i == listEnd); i++)
     {
@@ -170,7 +220,7 @@ PositionTable::GetCoordinatorFromNeighbor (Vector position, Vector nodePos)
 
   double initialDistance = CalculateDistance (nodePos, position);
 
-  std::map<Ipv4Address, std::pair<Vector, Time> >::iterator i;
+  std::map<Ipv4Address, std::pair<Vector, std::pair<Time, uint8_t> > >::iterator i;
   for (i = m_table.begin (); !(i == m_table.end ()); i++)
     {
       if (initialDistance > CalculateDistance (i->second.first, position) && GetIsCoordinator (i->first))
@@ -212,7 +262,7 @@ PositionTable::BestNeighbor (Vector position, Vector nodePos)
 
   bestFoundID = m_table.begin ()->first;
   double bestFoundDistance = CalculateDistance (m_table.begin ()->second.first, position);
-  std::map<Ipv4Address, std::pair<Vector, Time> >::iterator i;
+  std::map<Ipv4Address, std::pair<Vector, std::pair<Time, uint8_t> > >::iterator i;
   for (i = m_table.begin (); !(i == m_table.end ()); i++)
     {
       if (bestFoundDistance > CalculateDistance (i->second.first, position))
@@ -250,7 +300,7 @@ PositionTable::BestAngle (Vector previousHop, Vector nodePos)
   double tmpAngle;
   Ipv4Address bestFoundID = Ipv4Address::GetZero ();
   double bestFoundAngle = 360;
-  std::map<Ipv4Address, std::pair<Vector, Time> >::iterator i;
+  std::map<Ipv4Address, std::pair<Vector, std::pair<Time, uint8_t> > >::iterator i;
 
   for (i = m_table.begin (); !(i == m_table.end ()); i++)
     {
