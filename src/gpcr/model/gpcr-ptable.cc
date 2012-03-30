@@ -34,7 +34,7 @@ double covX;
 double covY;
 double meanX = 0;
 double meanY = 0;
-int neighbourCount = 0;
+int count = 0;
 /*according to GPCR authors p_xy = MOD(covXY/(covX*covY)), if p_xy<0.9 node is in junction*/
 
 /*cicle through neighbours to calculate meanX and meanY*/
@@ -42,8 +42,8 @@ std::map<Ipv4Address, std::pair<Vector, std::pair<Time, uint8_t> > >::iterator i
   for (i = m_table.begin (); !(i == m_table.end ()); i++)
     {
 	count++;
-	meanX += i->second.first.X;
-	meanY += i->second.first.Y;
+	meanX += i->second.first.x;
+	meanY += i->second.first.y;
 	}
 meanX = meanX / count;
 meanY = meanY / count;
@@ -51,9 +51,9 @@ meanY = meanY / count;
 /*cicle again to calculate covXY, covX and covY*/
   for (i = m_table.begin (); !(i == m_table.end ()); i++)
     {
-	covXY = covXY + ((i->second.first.X - meanX) * (i->second.first.Y - meanY));
-	covX = covX + ((i->second.first.X - meanX) * (i->second.first.X - meanX));
-	covY = covY + ((i->second.first.Y - meanY) * (i->second.first.Y - meanY));
+	covXY = covXY + ((i->second.first.x - meanX) * (i->second.first.y - meanY));
+	covX = covX + ((i->second.first.x - meanX) * (i->second.first.x - meanX));
+	covY = covY + ((i->second.first.y - meanY) * (i->second.first.y - meanY));
 	}
 	covX = sqrt(covX);
 	covY = sqrt(covY);

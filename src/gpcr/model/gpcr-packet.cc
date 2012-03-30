@@ -143,7 +143,7 @@ HelloHeader::Serialize (Buffer::Iterator i) const
 
   i.WriteHtonU64 (m_originPosx);
   i.WriteHtonU64 (m_originPosy);
-  i.WriteHtonU8 (m_isCoordinator);
+  i.WriteU8 (m_isCoordinator);
 
 }
 
@@ -155,7 +155,7 @@ HelloHeader::Deserialize (Buffer::Iterator start)
 
   m_originPosx = i.ReadNtohU64 ();
   m_originPosy = i.ReadNtohU64 ();
-  m_isCoordinator = i.ReadNtoh8 ();
+  m_isCoordinator = i.ReadU8 ();
 
   NS_LOG_DEBUG ("Deserialize X " << m_originPosx << " Y " << m_originPosy << " coord " << m_isCoordinator);
 
@@ -183,7 +183,7 @@ operator<< (std::ostream & os, HelloHeader const & h)
 bool
 HelloHeader::operator== (HelloHeader const & o) const
 {
-  return (m_originPosx == o.m_originPosx && m_originPosy == o.m_originPosy && m_isCoordinator = 0.m_isCoordinator);
+  return (m_originPosx == o.m_originPosx && m_originPosy == o.m_originPosy && m_isCoordinator == o.m_isCoordinator);
 }
 
 

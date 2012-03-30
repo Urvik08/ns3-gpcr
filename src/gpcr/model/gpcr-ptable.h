@@ -128,7 +128,7 @@ public:
 
 private:
   Time m_entryLifeTime;
-  std::map<Ipv4Address, std::pair<Vector, Time> > m_table;
+  std::map<Ipv4Address, std::pair<Vector, std::pair<Time, uint8_t> > > m_table;
   // TX error callback
   Callback<void, WifiMacHeader const &> m_txErrorCallback;
   // Process layer 2 TX error notification
